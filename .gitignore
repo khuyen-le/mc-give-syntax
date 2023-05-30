@@ -1,0 +1,7 @@
+*.DS_store
+experiment/node_modules
+analysis/data/RAW_DATA/*
+analysis/data/DATA_IGNORED/*
+analysis/.Rproj.user
+*cache*
+*.bin
