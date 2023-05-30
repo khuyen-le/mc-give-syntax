@@ -2,6 +2,7 @@
 experiment/node_modules
 analysis/data/RAW_DATA/*
 analysis/data/DATA_IGNORED/*
+analysis/pilot/*
 analysis/.Rproj.user
 *cache*
 *.bin
