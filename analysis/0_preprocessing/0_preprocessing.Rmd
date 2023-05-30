@@ -1,0 +1,87 @@
+---
+title: "Preprocessing - Give Syntax"
+output: html_document
+date: "2023-03-13"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library('jsonlite')
+library('tidyverse')
+library("purrr")
+library("uuid")
+```
+
+```{r create response file}
+files <- list.files(file.path(getwd(), "../data/RAW_DATA"), pattern = "*.json")
+
+df <- files %>%
+  map_df(~fromJSON(file.path(getwd(), "../data/RAW_DATA", .), flatten = TRUE)) %>%
+  pull(trials) %>%
+  group_by(subject_id) %>%
+  mutate(subject_id = UUIDgenerate())
+
+df.response <- df %>%
+  filter(phase == "test") %>%
+  select(subject_id, condition, category, label, selected_group, selected_group_location, selected_group_semantics) %>%
+  mutate(selected_concurrent_func = ifelse(selected_group_semantics == "con", 1, 0)) %>%
+    mutate(category_complexity = case_when(
+    grepl('hc', category, fixed = T) ~ 'high', 
+    grepl('lc', category, fixed = T) ~ 'low', 
+    grepl('mc', category, fixed = T) ~ 'medium'
+  )) %>%
+  mutate(category_function = case_when(
+    grepl('hf', category, fixed = T) ~ 'high', 
+    grepl('lf', category, fixed = T) ~ 'low', 
+    grepl('mf', category, fixed = T) ~ 'medium'
+  )) %>%
+  mutate(category = case_when(
+           category == 'hchf' ~ 'high complexity, high function',
+           category == 'hclf' ~ 'high complexity, low function',
+           category == 'mcmf' ~ 'medium complexity, medium function',
+           category == 'lchf' ~ 'low complexity, high function',
+           category == 'lclf' ~ 'low complexity, low function'
+         )) 
+
+
+df.response$trial_index <- rep(1:5, length.out = nrow(df.response))
+
+write.csv(df.response, "../data/PROCESSED_DATA/response.csv", row.names = FALSE)
+```
+
+```{r}
+df.demog_raw <- df %>%
+  filter (phase == "demog" | demog_question == "demog_meta") %>%
+  select(subject_id, user_lang, condition, response, demog_question) %>% 
+  group_by(subject_id) %>%
+  unnest(response) %>%
+  mutate(response = as.character(response)) %>%
+  mutate(response = ifelse(response == "", NA, response)) %>%
+  rename(demog_response = response)
+
+df.demog_age_gender <- df %>%
+  filter (demog_question == "demog_age_gender") %>%
+  select(subject_id, user_lang, condition, response, demog_question) %>% 
+  group_by(subject_id) %>%
+  mutate(response = map(toJSON(response), ~ fromJSON(.) %>% as.data.frame())) %>%
+  unnest(response) %>%
+  select(-demog_question) %>%
+  pivot_longer(
+    cols = -c(subject_id, user_lang, condition), 
+    names_to = "demog_question", 
+    values_to = "demog_response"
+  ) %>%
+  mutate(demog_response = as.character(demog_response))
+
+df.demog <- bind_rows(df.demog_raw, df.demog_age_gender) %>%
+  filter(demog_question != "demog_age_gender") %>%
+  arrange(subject_id) %>%
+  rowwise() %>%
+  mutate(demog_question = substring(text = demog_question, first = 7))
+
+
+write.csv(df.demog, "../data/PROCESSED_DATA/demog.csv", row.names = FALSE)
+```
+
+

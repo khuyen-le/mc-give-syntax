@@ -1,0 +1,674 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Experiment</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="lodash/lodash.js"></script>
+  <script src="jspsych/dist/jspsych.js"></script>
+  <script src="jspsych/dist/plugins/plugin-preload.js"></script>
+  <script src="jspsych/dist/plugins/plugin-html-button-response.js"></script>
+  <script src="jspsych/dist/plugins/plugin-fullscreen.js"></script>
+  <script src="jspsych/dist/plugins/plugin-instructions.js"></script>
+  <script src="jspsych/dist/plugins/plugin-survey.js"></script>
+  <script src="jspsych/dist/plugins/plugin-survey-likert.js"></script>
+  <script src="jspsych/dist/plugins/plugin-survey-multi-select.js"></script>
+  <script src="jspsych/dist/plugins/plugin-survey-multi-choice.js"></script>
+  <script src="jspsych/dist/plugins/plugin-survey-text.js"></script>
+  <script src="jspsych/dist/plugins/customs/survey-dropdown.js"></script>
+  <script src="jspsych/dist/plugins/customs/survey-multi-choice-image.js"></script>
+  <script src="jspsych/dist/plugins/customs/image-button-response-prompt-position.js"></script>
+  <script src="jspsych/dist/plugins/customs/video-button-response-prompt-position.js"></script>
+  <script src="script/instructions_demog.js"></script>
+  <script src="script/generate_scales.js"></script>
+  <script src="script/countries_languages.js"></script>
+  <link href="jspsych/dist/jspsych.css" rel="stylesheet" type="text/css">
+  </link>
+  <link href="css/experiment.css" rel="stylesheet" type="text/css">
+  </link>
+</head>
+
+<body>
+  <script>
+    function shuffle(array) {
+      return _.shuffle(array);
+    }
+
+    /* initialize jsPsych */
+    var jsPsych = initJsPsych({
+      show_progress_bar: true,
+      auto_update_progress_bar: false,
+      on_finish: function () {
+        console.log(jsPsych.data.get()); //final data
+        var data = jsPsych.data.get();
+        $.ajax({
+          type: "POST",
+          url: "/MC-give-syntax/experiment-data",
+          data: JSON.stringify({ data: data, subject_id: subject_id }),
+          contentType: "application/json"
+        })
+          .done(function () {
+            if (failed_check) {
+              window.location.href = "MC-give-syntax/return"
+            } else {
+              window.location.href = "MC-give-syntax/finish";
+            }
+          })
+          .fail(function () {
+            alert("A problem occurred while writing to the database. Please contact the researcher for more information.")
+          })
+      }
+    }); 
+
+    /* create timeline */
+    var timeline = [];
+
+    var condition = '<%- condition %>';
+    condition = "CT-";
+    jsPsych.data.addProperties({
+      "condition": condition == "MS-" ? "mass" : "count",
+    })
+
+    var failed_check = false;
+
+    console.log(condition);
+    var stimuli_dir = '<%- stimuli_dir %>';
+    stimuli_dir = stimuli_dir.split(",").filter(stim => stim != ".DS_Store");
+    stimuli_dir = stimuli_dir.map(function (stim) {
+      return "img/" + stim;
+    })
+    let stimuli_dir_img = stimuli_dir.filter(stim => stim.includes(".png"));
+    let stimuli_dir_vid = stimuli_dir.filter(stim => stim.includes(".mp4"));
+
+    var preload = {
+      type: jsPsychPreload,
+      images: stimuli_dir_img, 
+      video: stimuli_dir_vid, 
+    };
+    timeline.push(preload);
+
+    // capture info from Prolific, replace_subject_id
+    var subject_id = jsPsych.data.getURLVariable('PROLIFIC_PID');
+    subject_id = 'SYN-' + condition + subject_id + '-' + jsPsych.randomization.randomID(3); // SYN for syntax
+    var study_id = jsPsych.data.getURLVariable('STUDY_ID');
+    var session_id = jsPsych.data.getURLVariable('SESSION_ID');
+
+    jsPsych.data.addProperties({
+      subject_id: subject_id,
+      study_id: study_id,
+      session_id: session_id
+    }); 
+
+    /** GRAB THE USER LANG FOR EXCLUSION **/
+    var userLang = navigator.language || navigator.userLanguage; 
+    jsPsych.data.addProperties({ "user_lang" : userLang});
+
+    /** CONSENT FORM AND INSTRUCTIONS **/
+   var instructions = {
+      type: jsPsychInstructions,
+      pages: first_page_instruction,
+      show_clickable_nav: true,
+      allow_backward: false,
+      on_start: function () {
+        // set progress bar to 0 at the start of experiment
+        jsPsych.setProgressBar(0);
+      }
+    }; 
+
+    timeline.push(instructions);  
+
+    ////////////////////////////////////////////////////////////////////////
+    ///////////////////// FAMILIARIZATION //////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+
+    var familiarization_detector = {
+      timeline: [
+        {
+            type: customImageButtonResponsePromptPos,
+            stimulus: 'img/blicket.png',
+            stimulus_height: 500,
+            choices: ['Continue'],
+            prompt: 'This is a detector.',
+            prompt_before_stim: true
+        },
+        {
+            type: customVideoButtonResponsePromptPos,
+            stimulus: ['img/blicket_on.mp4'],
+            height: '500px',
+            choices: ['Continue'],
+            prompt: 'The detector lights up when it is activated.',
+            prompt_before_stim: true,
+            response_allowed_while_playing: false
+        },
+        {
+            type: customImageButtonResponsePromptPos,
+            stimulus: 'img/blicket_on.png',
+            stimulus_height: 500,
+            choices: ['Continue'],
+            prompt: `In this experiment, you will see some objects 
+                     that activate the detector, and some objects 
+                     that do not. Here are some examples.`,
+            prompt_before_stim: true
+        },
+      ],
+    }
+
+    var familiarization_videos = {
+      timeline: [
+        {
+            type: customImageButtonResponsePromptPos,
+            stimulus: jsPsych.timelineVariable('preview'),
+            stimulus_height: 500,
+            choices: ['Continue'],
+            prompt: jsPsych.timelineVariable('prompt'),
+            prompt_before_stim: true
+        },
+        {
+            type: customVideoButtonResponsePromptPos,
+            stimulus: jsPsych.timelineVariable('video'),
+            height: '500px',
+            choices: ['Continue'],
+            prompt: jsPsych.timelineVariable('prompt'),
+            prompt_before_stim: true,
+            response_allowed_while_playing: false
+        },
+    
+      ],
+    timeline_variables: [
+        { preview: 'img/fam_ind_1.png', video: ['img/fam_ind_1.mp4'], prompt: 'This object activates the detector.'},
+        { preview: 'img/fam_ind_2.png', video: ['img/fam_ind_2.mp4'], prompt: 'This is another object. This object also activates the detector.'},
+        { preview: 'img/fam_ind_off.png', video: ['img/fam_ind_off.mp4'], prompt: 'Not all objects activate the detector. This object does not activate the detector.'},
+        { preview: 'img/fam_con.png', video: ['img/fam_con.mp4'], prompt: 'Some objects activate the detector when they are together.'},
+        { preview: 'img/fam_con_off.png', video: ['img/fam_con_off.mp4'], prompt: 'Some objects do not activate the detector when they are together.'},
+    ]
+    }
+
+    timeline.push(familiarization_detector);
+    timeline.push(familiarization_videos);
+
+    ////////////////////////////////////////////////////////////////////////
+    ///////////////////// FAMILIARIZATION TEST /////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    var fam_error = 0; 
+    var familiarization_test_instr = {
+      timeline: [
+        {
+            type: customImageButtonResponsePromptPos,
+            stimulus: 'img/fam_a.png',
+            stimulus_height: 500,
+            choices: ['Continue'],
+            prompt: `In this experiment, you will see some groups of objects.<br>
+                     A group of objects will look like this example:<br>
+                     <img src="img/stim_fam_a.png" style="height: 100px"><br>
+                     For each group of objects, you will also see an image
+                     that summarizes how the objects interact with the detector, like this:`,
+            prompt_before_stim: true
+        },
+        {
+          type: jsPsychHtmlButtonResponse,
+          stimulus: `In this part of the study, you will answer some questions 
+                     about how objects interact with the detector.<br>
+                     Please use the information in the images provided to answer 
+                     the questions. You will have two opportunities to get each 
+                     set of questions correct.`,
+          choices: ['Continue']
+        }
+      ]
+    }
+    timeline.push(familiarization_test_instr);
+
+    var familiarization_test_a = {
+      timeline: [
+        {
+          type: jsPsychSurveyMultiChoice,
+          preamble: `Please answer the questions below about this group of objects:<br>
+                     <img src="img/fam_a.png" style="width:500px"><br>
+                     Please use the information in the image provided to answer 
+                     the questions. You will have two opportunities to get these
+                     questions correct.`,
+          questions: [
+            {
+              prompt: `Does this object <img src="img/stim_fam_a_l.png" style="height:80px">
+                       activate the detector?`, 
+              name: 'Fam_AL', 
+              options: ['Yes', 'No'], 
+              required: true
+            }, 
+            {
+              prompt: `Does this object <img src="img/stim_fam_a_m.png" style="height:80px">
+                       activate the detector?`, 
+              name: 'Fam_AM', 
+              options: ['Yes', 'No'], 
+              required: true
+            },
+            {
+              prompt: `Does this object <img src="img/stim_fam_a_r.png" style="height:80px">
+                       activate the detector?`, 
+              name: 'Fam_AR', 
+              options: ['Yes', 'No'], 
+              required: true
+            },
+            {
+              prompt: `Does this group of objects <img src="img/stim_fam_a.png" style="height:80px">
+                       activate the detector?`, 
+              name: 'Fam_A_All', 
+              options: ['Yes', 'No'], 
+              required: true
+            }
+          ],
+          randomize_question_order: true,
+          on_start: function() {
+            if (fam_error > 2) {
+              console.log("failed in exp1");
+              jsPsych.endExperiment();
+            }
+          }, 
+          on_finish: function(data) {
+            data.phase = "fam_check";
+          }
+        }],
+        loop_function: function(data) {
+          data.phase = "practice";
+          let response = jsPsych.data.getLastTrialData().trials[0].response; //final data
+          if (response.Fam_AL == "No" & response.Fam_AM == "Yes" & response.Fam_AR == "Yes" & response.Fam_A_All == "No") {
+                fam_error = 0; // reset after each questions
+                return false;
+              } else {
+                fam_error++; 
+                console.log(fam_error);
+                if (fam_error > 2) {
+                  failed_check = true;
+                  return false;
+                } else {
+                  alert("Please double check your answers!")
+                  return true;
+                }
+              }
+        }, 
+    }
+
+    timeline.push(familiarization_test_a);
+
+    var familiarization_test_b = {
+      timeline: [
+        {
+          type: jsPsychSurveyMultiChoice,
+          preamble: `Here's a different group of objects. Please answer the questions below about this group of objects:<br>
+                     <img src="img/fam_b.png" style="width:500px"><br>
+                     Please use the information in the image provided to answer 
+                     the questions. You will have two opportunities to get these
+                     questions correct.`,
+          questions: [
+            {
+              prompt: `Does this object <img src="img/stim_fam_b_l.png" style="height:80px">
+                       activate the detector?`, 
+              name: 'Fam_BL', 
+              options: ['Yes', 'No'], 
+              required: true
+            }, 
+            {
+              prompt: `Does this object <img src="img/stim_fam_b_m.png" style="height:80px">
+                       activate the detector?`, 
+              name: 'Fam_BM', 
+              options: ['Yes', 'No'], 
+              required: true
+            },
+            {
+              prompt: `Does this object <img src="img/stim_fam_b_r.png" style="height:80px">
+                       activate the detector?`, 
+              name: 'Fam_BR', 
+              options: ['Yes', 'No'], 
+              required: true
+            },
+            {
+              prompt: `Does this group of objects <img src="img/stim_fam_b.png" style="height:80px">
+                       activate the detector?`, 
+              name: 'Fam_B_All', 
+              options: ['Yes', 'No'], 
+              required: true
+            }
+          ],
+          randomize_question_order: true,
+          on_start: function() {
+            if (fam_error > 2) {
+              console.log("failed in exp1");
+              failed_check = true;
+              jsPsych.endExperiment();
+            }
+          }, 
+          on_finish: function(data) {
+            data.phase = "fam_check";
+          }
+        }], 
+          loop_function: function(data) {
+            let response = jsPsych.data.getLastTrialData().trials[0].response; //final data
+            if (response.Fam_BL == "Yes" & response.Fam_BM == "No" & response.Fam_BR == "No" & response.Fam_B_All == "Yes") {
+                  fam_error = 0; // reset after each questions
+                  return false;
+                } else {
+                  fam_error++; 
+                  console.log(fam_error);
+                  if (fam_error > 2) {
+                    failed_check = true;
+                    return false; 
+                  } else {
+                    alert("Please double check your answers!")
+                    return true;
+                  }
+                }
+          }, 
+    }
+
+    timeline.push(familiarization_test_b);
+
+    ////////////////////////////////////////////////////////////////////////
+    ///////////////////// TRIALS ///////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+
+    var enter_fullscreen = {
+      type: jsPsychFullscreen,
+      message: "This part of the study requires the browser to be in fullscreen. Please click the below button to go into fullscreen mode.<br>",
+      fullscreen_mode: true,
+      on_start: function() {
+          if (fam_error > 2) {
+            jsPsych.endExperiment();
+          }
+        }
+    }
+
+    var trial_in_fullscreen = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: fullscreen_thanks,
+      choices: ['Continue']
+    }
+
+    timeline.push(enter_fullscreen); 
+    timeline.push(trial_in_fullscreen);
+
+    var test_intro = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `In this part of the study, you will see some words that might be unfamiliar.
+                 You will also see some groups of objects and how they interact with the detector.
+                 Use the information provided to guess which group of objects the word refers to.`,
+      choices: ['Continue']
+    }
+
+    timeline.push(test_intro);
+
+    var trial_order = shuffle(["hchf", "lclf", "hclf", "lchf", "mcmf"]);
+    var labels = shuffle(["zorp", "garn", "blicket", "toma", "sarel"]);
+
+    var test_stimuli = trial_order.map((trial_item, index) => {
+      let prompt = "Some of these are " 
+      if (condition == "MS-") { // MS- vs CT-
+        prompt += ("<b>" + labels[index] + "</b>. Please select the ones that are <b>" + labels[index] + "</b>.")
+      } else {
+        prompt += ("<b>" + labels[index] + "s</b>. Please select the ones that are <b>" + labels[index] + "s</b>.")
+      }
+      let cat_shuffle_loc = shuffle(["a", "b"]);
+      let cat_shuffle_ind = shuffle(["ind", "con"]);
+      return {
+        prompt: prompt,
+        label: labels[index],
+        // img/stim_hchf_a.png
+        options: [
+          "img/stim_" + trial_item + "_" + cat_shuffle_loc[0] + ".png", 
+          "img/stim_" + trial_item + "_" + cat_shuffle_loc[1] + ".png"
+        ],
+        //img/hchf_a_ind.png
+        options_illustration: [
+          "img/" + trial_item + "_" + cat_shuffle_loc[0] + "_" + cat_shuffle_ind[0] + ".png",
+          "img/" + trial_item + "_" + cat_shuffle_loc[1] + "_" + cat_shuffle_ind[1] + ".png"
+        ],
+        required: true, 
+        horizontal: true, 
+        name: trial_item
+      }
+      
+    })
+
+    var test = test_stimuli.map((item) => {
+      console.log(item);
+      let test_item = {
+        type: customSurveyMultiChoiceImage,
+        questions: [{
+          prompt: item.prompt,
+          options: item.options, 
+          options_illustration: item.options_illustration, 
+          required: true, 
+          horizontal: true, 
+          name: item.name
+        }],
+        on_finish: function(data) {
+          data.phase = "test";
+          data.category = item.name;
+          data.label = item.label;
+          data.prompt = item.prompt; // just in case
+          data.selected_group = data.response[item.name];
+          let selected_group_index = item.options.indexOf(data.selected_group);
+          data.selected_group_location = selected_group_index == 0 ? "left" : "right";
+          data.selected_group_semantics = item.options_illustration[selected_group_index].slice(-7, -7 + 3); //con or ind 
+          let curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+          jsPsych.setProgressBar(curr_progress_bar_value + (1 / test_stimuli.length));
+        }
+      }
+      timeline.push(test_item);
+    })
+ 
+
+    ////////////////////////////////////////////////////////////////////////
+    ///////////////////// demog Qs start from here /////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+
+    // intro page
+    var demog_intro = {
+      type: jsPsychInstructions,
+      pages: demog_instr,
+      show_clickable_nav: true,
+      allow_backward: false
+    }
+
+    timeline.push(demog_intro);
+
+    var demog_meta = {
+      type: jsPsychSurveyText,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_meta_instr,
+          name: "demog_meta",
+          rows: 5
+        }
+      ],
+      data: {
+        demog_question: "demog_meta"
+      }
+    }
+
+    timeline.push(demog_meta);
+
+    var demog_country_current = {
+      type: SurveyDropdown,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_current_country_instr,
+          name: 'demog_country_current',
+          options: countryList,
+          required: true
+        },
+      ],
+      data: {
+        demog_question: 'demog_country_current'
+      }
+    }
+
+    var demog_language_first = {
+      type: jsPsychSurveyMultiChoice,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_language_first_instr,
+          name: 'demog_language_first',
+          options: demog_language_first_opts,
+          required: true,
+        },
+      ],
+      data: {
+        demog_question: "demog_language_first"
+      },
+    };
+
+
+    var demog_language_others = {
+      type: SurveyDropdown,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_language_others_instr,
+          name: 'demog_language_others',
+          options: languageList,
+        },
+      ],
+      data: {
+        demog_question: 'demog_language_others'
+      },
+    }
+
+    function get_prev_answer(key) {
+      return jsPsych.data.get().last(1).values()[0].response[key];
+    }
+
+    var demog_language_others_fluency = {
+      type: SurveyDropdown,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: function () {
+            return demog_language_others_fluency_sp + get_prev_answer('demog_language_others');
+          },
+          name: 'demog_language_others_fluency_sp',
+          options: demog_language_others_fluency_opts,
+          required: true,
+        },
+        {
+          prompt: function () {
+            return demog_language_others_fluency_ud + get_prev_answer('demog_language_others');
+          },
+          name: 'demog_language_others_fluency_ud',
+          options: demog_language_others_fluency_opts,
+          required: true,
+        }
+      ],
+      data: {
+        demog_question: 'demog_language_others_fluency',
+      }
+    }
+
+    var demog_language_others_fluency_conditional_node = {
+      timeline: [demog_language_others_fluency],
+      conditional_function: function () {
+        return (get_prev_answer("demog_language_others") != "");
+      }
+    }
+
+    var demog_language_others_loop = {
+      timeline: [demog_language_others, demog_language_others_fluency_conditional_node],
+      loop_function: function (data) {
+        return (get_prev_answer("demog_language_others") != ""); // if the previous node has demog_language_others, then continue looping. if not then stop.
+      }
+    }
+
+    var demog_age_gender = {
+      type: SurveyDropdown,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_age_instr,
+          name: 'demog_age',
+          options: demog_age_opts,
+          required: true,
+        },
+        {
+          prompt: demog_gender_instr,
+          name: 'demog_gender',
+          options: demog_gender_opts,
+          required: true,
+        },
+      ],
+      data: {
+        demog_question: 'demog_age_gender',
+      }
+    }
+
+    var demog_ethnic = {
+      type: jsPsychSurveyMultiSelect,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_ethnic_instr,
+          options: demog_ethnic_opts,
+          name: 'demog_ethnic'
+        },
+      ],
+      data: {
+        demog_question: 'demog_ethnic',
+      }
+    };
+
+    var demog_objses = {
+      type: jsPsychSurveyMultiChoice,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_objective_ses_instr,
+          name: 'demog_objses',
+          options: demog_objective_ses_opts,
+        },
+      ],
+      data: {
+        demog_question: "demog_objses"
+      },
+    }
+
+    var demog_final_feedback = {
+      type: jsPsychSurveyText,
+      preamble: demog_require_answer,
+      questions: [
+        {
+          prompt: demog_final_feedback_instr,
+          name: "demog_final_feedback",
+          rows: 5
+        }
+      ],
+      data: {
+        demog_question: "demog_final_feedback"
+      }
+    }
+
+    var demog_qs = [
+      demog_country_current,
+      demog_language_first,
+      demog_language_others_loop,
+      demog_age_gender, 
+      demog_ethnic, 
+      demog_objses,
+      demog_final_feedback, 
+    ];
+
+    demog_qs.map(function (demog_q) {
+      if (!demog_q.data) {
+        demog_q.data = {}
+      }
+      demog_q.data.phase = "demog";
+      timeline.push(demog_q);
+    })
+
+
+    /* start the experiment */
+    jsPsych.run(timeline);
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,7 @@
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+\centering
+\includegraphics{figs/exp.png}
+\caption{\label{fig:my-figure}Example of a critical trial in the count syntax condition.}
+\end{figure*}

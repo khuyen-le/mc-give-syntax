@@ -1,0 +1,238 @@
+---
+title: "Mass/Count Superordinate -- Semantic Inferences from Syntax"
+output: html_document
+date: "2023-05-11"
+---
+
+```{r setup, echo = FALSE, include = FALSE}
+library("papaja")
+library("knitr") # for knitting things
+library("tidyverse") # for all things tidyverse
+library("car")
+library("lme4")
+library("patchwork")
+library("effsize")
+library("purrr")
+library('ggplot2')
+library('car')
+library('brms')
+library('emmeans')
+library('easystats')
+
+# these options here change the formatting of how comments are rendered
+opts_chunk$set(
+  comment = "",
+  results = "hold",
+  fig.show = "hold")
+
+#options(mc.cores = parallel::detectCores())
+
+# set the default ggplot theme 
+#theme_set(theme_classic())
+
+```
+
+```{r loading data, warning=FALSE, include=F}
+df.demog <- read.csv("../data/PROCESSED_DATA/demog.csv")
+df.response <- read.csv("../data/PROCESSED_DATA/response.csv")
+```
+
+## Demographics Stats
+
+```{r summarize ppt}
+df.demog %>%
+  filter(demog_question == "gender") %>%
+  count(demog_response) %>%
+  knitr::kable()
+
+df.demog %>% 
+  group_by(subject_id, condition) %>%
+  summarise(rows = n()) %>%
+  select(-rows) %>%
+  group_by(condition) %>%
+  count(condition) %>%
+  knitr::kable()
+
+df.demog %>% 
+  filter(demog_question == "age") %>%
+  summarise(mean_age = mean(as.numeric(demog_response)), 
+            sd_age = sd(as.numeric(demog_response))) %>%
+  knitr::kable()
+```
+
+## Results 
+No difference between the mass and count syntax conditions (concurrent function dummy coded as 1).
+```{r}
+t.test(df.response %>% 
+         filter(condition == "mass") %>% 
+         group_by(subject_id) %>%
+         summarise(mean_prop_concurrent_func = mean(selected_concurrent_func, na.rm = T)) %>% 
+         pull(mean_prop_concurrent_func),
+         mu = 0.5, alternative = "two.sided")
+
+t.test(df.response %>% 
+         filter(condition == "count") %>% 
+         group_by(subject_id) %>%
+         summarise(mean_prop_concurrent_func = mean(selected_concurrent_func, na.rm = T)) %>% 
+         pull(mean_prop_concurrent_func),
+         mu = 0.5, alternative = "two.sided")
+```
+
+```{r}
+ggplot(data = df.response, 
+       mapping = aes(x = condition, y = selected_concurrent_func, color = condition)) + 
+  geom_jitter(aes(group = subject_id), 
+              height = 0, 
+              alpha = 0.5) +  
+  stat_summary(fun.data = "mean_cl_boot", 
+               geom = "pointrange") +
+  theme(legend.position = "none") + 
+  geom_hline(yintercept = 0.5, linetype = "dashed") + 
+  ylab("Selected concurrent function (by trial)")
+
+ggplot(data = df.response %>%
+         group_by(subject_id, condition) %>%
+         summarise(mean_concurrent_func = mean(selected_concurrent_func, na.rm = TRUE)),
+       mapping = aes(x = condition, y = mean_concurrent_func)) + 
+  geom_violin(aes(fill = condition)) +
+  geom_jitter(height = 0, 
+              alpha = 0.3) +  
+  stat_summary(fun.data = "mean_cl_boot", 
+               geom = "pointrange") +
+  theme(legend.position = "none") + 
+  geom_hline(yintercept = 0.5, linetype = "dashed") + 
+  ylab("Proportion Concurrent Function Selection") + 
+  xlab("Syntactic Condition")
+```
+
+
+No differences between mass/count conditions even when grouped by stimuli category (by complexity, function, or complexity x function).
+```{r}
+ggplot(data = df.response,
+       mapping = aes(x = category, y = selected_concurrent_func, color = condition)) + 
+  geom_jitter(height = 0, 
+              alpha = 0.5) +  
+  stat_summary(fun.data = "mean_cl_boot", 
+               geom = "pointrange", 
+               position = position_dodge(0.7))  + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7)) + 
+  geom_hline(yintercept = 0.5, linetype = "dashed") + 
+  scale_x_discrete(labels = c("high C, high F", "high C, low F", "low C, high F", "low C, low F", "medium C, medium F")) + 
+  ylab("Prop. Concurrent Function Selection") + 
+  xlab("Category") +
+  labs(color = "Syntactic Condition")
+
+ggplot(data = df.response,
+       mapping = aes(x = category_complexity, y = selected_concurrent_func, color = condition)) + 
+  geom_jitter(height = 0, 
+              alpha = 0.5) +  
+  stat_summary(fun.data = "mean_cl_boot", 
+               geom = "pointrange", 
+               position = position_dodge(0.7))  + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7)) + 
+  geom_hline(yintercept = 0.5, linetype = "dashed") + 
+  ylab("Mean concurrent function selection (by participant)")
+
+ggplot(data = df.response,
+       mapping = aes(x = category_function, y = selected_concurrent_func, color = condition)) + 
+  geom_jitter(height = 0, 
+              alpha = 0.5) +  
+  stat_summary(fun.data = "mean_cl_boot", 
+               geom = "pointrange", 
+               position = position_dodge(0.7))  + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7)) + 
+  geom_hline(yintercept = 0.5, linetype = "dashed") + 
+  ylab("Mean concurrent function selection (by participant)")
+```
+
+Checking if the repeated trials prompt people to be more random with their selections (if this was the case, we might see a significant difference in responding between mass/count conditions in the 1st trial, as opposed to the later trials.)
+No distinction between conditions in any trial. But participants chose significantly more individual function groups (for both mass/count conditions) in the 1st trial, and were at chance for the other trials. 
+
+```{r}
+ggplot(data = df.response,
+       mapping = aes(x = trial_index, y = selected_concurrent_func, color = condition)) + 
+  geom_jitter(height = 0, 
+              alpha = 0.5) +  
+  stat_summary(fun.data = "mean_cl_boot", 
+               geom = "pointrange", 
+               position = position_dodge(0.7))  + 
+  geom_hline(yintercept = 0.5, linetype = "dashed") + 
+  ylab("Prop. Concurrent Function Selection") + 
+  xlab("Trial #") +
+  labs(color = "Syntactic Condition")
+
+fit.trial_ind <- glmer(selected_concurrent_func ~ condition * trial_index + (1|subject_id) + (1|category), 
+                       data = df.response %>% 
+                         mutate(trial_index = as.factor(trial_index)),
+                       family="binomial")
+summary(fit.trial_ind)
+Anova(fit.trial_ind, type = 3)
+
+fit.trial_ind %>% 
+  emmeans(specs = pairwise ~ condition + trial_index,
+          adjust = "none")
+```
+
+```{r}
+t.test(df.response %>% 
+         filter(trial_index == 1) %>% 
+         group_by(subject_id) %>%
+         summarise(mean_prop_concurrent_func = mean(selected_concurrent_func, na.rm = T)) %>% 
+         pull(mean_prop_concurrent_func),
+         mu = 0.5, alternative = "two.sided")
+
+```
+
+
+Running the regressions show no effect for any predictors. 
+
+```{r}
+fit.base <- glmer(selected_concurrent_func ~ 1 + (1|subject_id) + (1|category), data = df.response, family="binomial")
+summary(fit.base)
+Anova(fit.base, type = 3)
+
+fit.cond <- glmer(selected_concurrent_func ~ condition + (1|subject_id) + (1|category), data = df.response, family="binomial")
+summary(fit.cond)
+Anova(fit.cond, type = 3)
+
+anova(fit.base, fit.cond)
+```
+
+```{r bayes}
+fit.brm_bf1 = brm(formula = selected_concurrent_func ~ 1 + (1|subject_id) + (1|category),
+                        data = df.response,
+                        save_pars = save_pars(all = T),
+                        file = "cache/brm_bf1")
+
+r.fit.brm_bf1 <- report(fit.brm_bf1, verbose = FALSE)
+
+fit.brm_bf2 = brm(formula = selected_concurrent_func ~ condition + (1|subject_id) + (1|category),
+                        data = df.response,
+                        save_pars = save_pars(all = T),
+                        file = "cache/brm_bf2")
+
+r.fit.brm_bf2 <- report(fit.brm_bf2, verbose = FALSE)
+
+bayes_factor(fit.brm_bf2, fit.brm_bf1)
+```
+
+```{r}
+
+fit.category <- glmer(selected_concurrent_func ~ condition + category + (1|subject_id), data = df.response, family="binomial")
+summary(fit.category)
+Anova(fit.category, type = 3)
+
+fit.category_complexity <- glmer(selected_concurrent_func ~ condition + category_complexity + (1|subject_id), data = df.response, family="binomial")
+summary(fit.category_complexity)
+Anova(fit.category_complexity, type = 3)
+
+fit.category_function <- glmer(selected_concurrent_func ~ condition + category_function + (1|subject_id), data = df.response, family="binomial")
+summary(fit.category_function)
+Anova(fit.category_function, type = 3)
+
+fit.category_int <- glmer(selected_concurrent_func ~ condition + category_function * category_complexity + (1|subject_id), data = df.response, family="binomial")
+summary(fit.category_int)
+Anova(fit.category_int, type = 3)
+```
+
+

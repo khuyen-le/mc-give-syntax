@@ -1,0 +1,18 @@
+\begin{table*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+
+\caption{\label{tab:unnamed-chunk-1}In the Category column, C stands for Complexity, F stands for Functionality}
+\centering
+\begin{tabular}[t]{lcc}
+\toprule
+Category & Mean Complexity Rating & Mean Functionality Rating\\
+\midrule
+high C, high F & 4.99 & 4.39\\
+high C, low F & 4.56 & 2.80\\
+low C, high F & 2.54 & 4.36\\
+low C, low F & 2.69 & 2.63\\
+medium C, medium F & 3.87 & 3.44\\
+\bottomrule
+\end{tabular}
+\end{table*}

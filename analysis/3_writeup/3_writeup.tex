@@ -1,0 +1,493 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  man,floatsintext]{apa6}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+% Make \paragraph and \subparagraph free-standing
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+\ifLuaTeX
+\usepackage[bidi=basic]{babel}
+\else
+\usepackage[bidi=default]{babel}
+\fi
+\babelprovide[main,import]{english}
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
+% Manuscript styling
+\usepackage{upgreek}
+\captionsetup{font=singlespacing,justification=justified}
+
+% Table formatting
+\usepackage{longtable}
+\usepackage{lscape}
+% \usepackage[counterclockwise]{rotating}   % Landscape page setup for large tables
+\usepackage{multirow}		% Table styling
+\usepackage{tabularx}		% Control Column width
+\usepackage[flushleft]{threeparttable}	% Allows for three part tables with a specified notes section
+\usepackage{threeparttablex}            % Lets threeparttable work with longtable
+
+% Create new environments so endfloat can handle them
+% \newenvironment{ltable}
+%   {\begin{landscape}\centering\begin{threeparttable}}
+%   {\end{threeparttable}\end{landscape}}
+\newenvironment{lltable}{\begin{landscape}\centering\begin{ThreePartTable}}{\end{ThreePartTable}\end{landscape}}
+
+% Enables adjusting longtable caption width to table width
+% Solution found at http://golatex.de/longtable-mit-caption-so-breit-wie-die-tabelle-t15767.html
+\makeatletter
+\newcommand\LastLTentrywidth{1em}
+\newlength\longtablewidth
+\setlength{\longtablewidth}{1in}
+\newcommand{\getlongtablewidth}{\begingroup \ifcsname LT@\roman{LT@tables}\endcsname \global\longtablewidth=0pt \renewcommand{\LT@entry}[2]{\global\advance\longtablewidth by ##2\relax\gdef\LastLTentrywidth{##2}}\@nameuse{LT@\roman{LT@tables}} \fi \endgroup}
+
+% \setlength{\parindent}{0.5in}
+% \setlength{\parskip}{0pt plus 0pt minus 0pt}
+
+% Overwrite redefinition of paragraph and subparagraph by the default LaTeX template
+% See https://github.com/crsh/papaja/issues/292
+\makeatletter
+\renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}%
+  {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries\itshape\typesectitle}}
+
+\renewcommand{\subparagraph}[1]{\@startsection{subparagraph}{5}{1em}%
+  {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+  {-\z@\relax}%
+  {\normalfont\normalsize\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
+\makeatother
+
+% \usepackage{etoolbox}
+\makeatletter
+\patchcmd{\HyOrg@maketitle}
+  {\section{\normalfont\normalsize\abstractname}}
+  {\section*{\normalfont\normalsize\abstractname}}
+  {}{\typeout{Failed to patch abstract.}}
+\patchcmd{\HyOrg@maketitle}
+  {\section{\protect\normalfont{\@title}}}
+  {\section*{\protect\normalfont{\@title}}}
+  {}{\typeout{Failed to patch title.}}
+\makeatother
+
+\usepackage{xpatch}
+\makeatletter
+\xapptocmd\appendix
+  {\xapptocmd\section
+    {\addcontentsline{toc}{section}{\appendixname\ifoneappendix\else~\theappendix\fi\\: #1}}
+    {}{\InnerPatchFailed}%
+  }
+{}{\PatchFailed}
+\keywords{Syntax, Semantics, Mass Syntax, Count Syntax, Individuation, Function\newline\indent Word count: 5898}
+\usepackage{csquotes}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Syntax-Semantics Mappings of Superordinate Nouns: Mass-Count Syntax and Inferences about Functional Context},
+  pdfauthor={Khuyen Le1 \& David Barner1},
+  pdflang={en-EN},
+  pdfkeywords={Syntax, Semantics, Mass Syntax, Count Syntax, Individuation, Function},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Syntax-Semantics Mappings of Superordinate Nouns: Mass-Count Syntax and Inferences about Functional Context}
+\author{Khuyen Le\textsuperscript{1} \& David Barner\textsuperscript{1}}
+\date{}
+
+
+\shorttitle{Syntax-Semantics Mappings of Superordinate Nouns}
+
+\authornote{
+
+Correspondence concerning this article should be addressed to Khuyen Le. E-mail: \href{mailto:knl005@ucsd.edu}{\nolinkurl{knl005@ucsd.edu}}
+
+}
+
+\affiliation{\vspace{0.5cm}\textsuperscript{1} University of California, San Diego}
+
+\abstract{%
+Children's acquisition of language has been hypothesized to be supported by a bootstrapping process between syntax and semantics. Children notice the correspondence between the meaning of expressions and their lexical categories, which allow them to learn these expressions and their grammatical rules more effectively. One syntactic distinction that children in some languages have to learn is the mass-count distinction, which has been theorized to be acquired with a bootstrapping process using one-to-one bidirectional mappings between syntax and semantics. In this view, count nouns denote individuated entities, while mass nouns denote non-individuated entities (Quine, 1960; Macnamara, 1972) -- a correspondence that is used by children to learn mass and count nouns. However, mass superordinate nouns that refer to individuated objects (such as furniture and jewelry) appear to be counterexamples to the bidirectional mapping theory (Gillon, 1999; Chierchia, 1998). To reconcile these counterexamples, some theorists posit that mass nouns actually denote entities that are construed to be non-individuated, regardless of their ontological status as individuated objects or unindividuated phenomena (Bloom, 1994; McCawley, 1975; Wisniewski, Imai \& Casey, 1996). The current study tests a semantic contrast proposed by Wisniewski et al (1996) as corresponding to mass-count syntax for superordinate nouns: mass nouns denote objects that concurrently participate in a function, while count nouns denote objects participating in a function individually. We show that there is no evidence for the bidirectional mapping theory: adult English speakers showed no differential preference for functional context when shown either novel nouns in mass or count syntax. The results instead support a mass non-specificity theory (Gillon, 1999; Barner \& Snedeker, 2006): while count nouns denote individuated objects, mass nouns are unspecified in their construal and can be flexibily individuated or not.
+}
+
+
+
+\begin{document}
+\maketitle
+
+To become productive users of a language, children must acquire not only the semantics of language (the meaning of expressions) but also its syntax (lexical categories and grammatical rules). Yet these processes are not necessarily independent. Previous studies have argued that during acquisition, syntactic categories and semantic meanings constrain one another, such that language learners can exploit such relationship to reduce the hypothesis space that they need to consider when faced with a novel word or utterance, i.e., through a bootstrapping process (Braine, 1987; Gleitman, 1990; MacNamara, 1972; Naigles, 1996; Pinker, 1984).
+
+One test case for how syntax and semantics might interact to guide language acquisition is the mass-count distinction, which exists in many languages, including English. In English, count nouns (such as \emph{cat} or \emph{table}) typically can be pluralized, while mass nouns (such as \emph{sand} or \emph{water}) typically cannot, without changing category. Count nouns can be modified by cardinal numbers (\emph{one}, \emph{two}, \emph{three}), and certain modifiers such as several, many, these, those -- none of which can be used to modify mass nouns (Jespersen, 1909). According to some previous studies, these syntactic categories correspond to a clear-cut semantic distinction, such that count nouns always refer to countable entities, like objects, while mass nouns refer to non-countable entities, like substances. By noticing that a word refers to a countable thing, children might classify it as a count noun. And by extension, by noticing that a word occurs in count syntax, they might infer that it refers to a countable entity in the world.
+
+This kind of approach is premised on the idea that a clear correspondence exists between the syntax and semantics of mass and count nouns. In particular, Quine (1960) proposes that words used with count syntax denote individuated, countable, entities, while mass nouns denote unindividuated and uncountable phenomena (see also Bloom, 1994, 1999; Gordon, 1985, 1988; Link, 1983; Wisniewski, Imai, \& Casey, 1996). These mappings between the mass-count syntax status of a word, and its referent's status as an individuated object, are hypothesized to aid acquisition in a bootstrapping process: MacNamara (1972) suggests that language users use individuation in acquiring mass-count syntax: learning nouns that refer to individuated objects as count nouns, and nouns that refer to unindividuated objects as mass nouns (see also Braine, 1992).
+
+In support of the syntax-semantics bidirectional mapping theory, children have been shown to distinguish between countable individuals and uncountable phenomena, making it a viable semantic distinction to bootstrap acquisition of mass-count syntax. Prelinguistic infants are able to track individuated objects under occlusion (Carey \& Xu, 2001; Feigenson \& Carey, 2003), but fail to track non-individuated substances (Huntley-Fenner, Carey, \& Solimando, 2002). Also, children as young as 2 years old are able to differentiate between objects and substances, and extend novel words differently based on that distinction. When given a novel label in neutral syntax (e.g., `the garn'), and a choice that matches the original exemplar by shape and another choice matching by substance, 2-year-olds are more likely to select the shape-match when the original exemplar is an object with definite shape. In contrast, they are more likely to select the substance-match when the original exemplar is a substance with non-definite shape. Additionally, 2-year-old Japanese children also distinguish between individuated objects and non-solid substances in a similar word extension task, while having no mass-count distinction in their native language (Imai \& Gentner, 1997). These results support the view that there exists a prelinguistic ontological distinction of `individual,' that could be utilized to bootstrap acquisition of novel labels as mass for non-solid substances, or otherwise non-individuated items, or count for solid objects, or otherwise individuated items (see also Imai, Gentner, \& Uchida, 1994; Landau, Smith, \& Jones, 1988; Samuelson \& Smith, 1999).
+
+However, distinction between ontological categories like object/substance has been shown to not be the only factor driving acquisition of mass-count syntax (Gathercole, 1985; Gordon, 1985, 1988). Gordon (1985) showed that children between 3;5 and 5;5 used syntactic cues to make inferences about a novel label's referent, even when they were given conflicting syntactic and semantic cues. Children were shown either a novel object or some liquid in a test tube. The experimenter then named the object or the substance with a label in either a congruent syntax or a conflicting syntax (for example, with the liquid, the child either heard ``this is some garn'' in the congruent syntax condition, and ``this is a garn'' in the conflicting syntax condition). Children were then shown a group of many objects or a group of many liquid-containing test tubes, and asked to complete a sentence referring to them. Notably, in the conflicting condition where syntactic and semantic cues pointed to different inferences, children preferred to use the syntactic cue: for example, pluralizing the novel label when it was introduced as `a garn' (count syntax), even when it referred to a liquid. The bias towards the syntactic cues increases in older children and adults (Bloom \& Kelemen, 1995). Gordon (1985) interpreted these results to show that children use mass-count syntax to make inferences about quantification -- whether a referent is countable or not, which might be independent from its ontological status as an object or a substance.
+
+While results from previous studies have been conflicted in terms of the extent to which children use object/substance ontological distinction to acquire mass/count syntax, they establish syntax-semantics bidirectional mappings between mass-count syntax and quantification -- mass nouns refer to uncountable, non-individuated phenomena, while count nouns refer to countable, individuated objects. However, a problem with this account, noted as early as Quine (1960) is that many apparent counter-examples exist (Chierchia, 1998; see also Gillon, 1992, 1999). One such example is that of mass superordinate nouns that refer to objects (for e.g., furniture, jewelry, silverware). The smallest constituent of furniture that could still be referred to as `furniture' is individuated and countable (for e.g., one could still call a chair `furniture', but not half a chair). However, the smallest constituent of substance-mass nouns such as water that could still be referred to as `water' is unindividuated (Cheng, 1973). In other words, referents of substance-mass nouns can be infinitely divided without losing its status as that noun, but this is not the case with object-mass superordinate nouns (``what is too small to count as furniture is not too small to count as water or sugar; so the limitation needed cannot be worked into any general adaptation of `is' or `is a part of','' Quine, 1960, p. 99). The extension of mass object-superordinate nouns (e.g., furniture) seems to be individuated objects ( e.g., chairs, tables, beds), contradicting the bidirectional mapping theory.
+
+One way to rescue the theory in the face of such counterexamples is by considering individuation as the language user's construal of the referent as individuated entities or a non-individuated group, as opposed to its ontological status as object/substance (Bloom, 1994; Wierzbicka, 1988; Wisniewski et al., 1996). According to Wisniewski et al. (1996), when a mass noun like \emph{waterfowl} is used to refer to a collection of birds, the word does not refer to the birds as individuals, but instead as a group of unindividuated entities. In certain circumstances, a speaker might refer to a group of birds as \emph{waterfowl} if she conceptualizes them as an unindividuated group, rather than as individual birds. The construal theory maintains the bidirectional mapping theory, only updating it so that the correspondence is between mass syntax and non-individuating construals, and count syntax and individuating construals (as opposed to ontological status of object/substance).
+
+Barner and Snedeker (2005) tested the construal theory for mass superordinate nouns (such as \emph{furniture} and \emph{silverware}) using a quantity judgment task, where participants were presented with two groups of objects and asked to choose which is ``more''. In the task, participants were shown two characters, and were asked, e.g., ``Who has more shoes'' in a context where one character had a greater number of items, and the other had a greater volume (e.g., a smaller number of big shoes). For count nouns like ``shoe'' it was expected that participants would base their quantity judgments on number, whereas for mass nouns like \emph{butter} it was expected that they would base their judgments on volume. More important than these cases, however, were mass/count ambiguous nouns like \emph{stone} or \emph{string} where there were clear individuals in the world, but the items could be named with either mass or count syntax. In these cases, Barner and Snedeker found that participants based judgments on number when the nouns were presented in count syntax, but on volume when presented in mass syntax, suggesting that construal shifted as a function of syntax, and that the task was therefore sensitive to construal, and not merely upon whether or not there were discrete countable objects in the world.
+
+Given this finding, Barner and Snedeker reasoned that if mass superordinate nouns such as furniture individuate, then participants should base judgments for these nouns on number, whereas if they don't then judgments should be based on volume. Compatible with the first hypothesis, when they tested participants with nouns including silverware, furniture, clothing, and mail, participants overwhelmingly selected the character who had a group of many small pieces of furniture over the character who had a group containing fewer, larger pieces of furniture. Based on this, Barner and Snedeker concluded some mass superordinate mass nouns (such as furniture) individuate, against the bidirectional mapping account.
+
+However, others would argue that the contrast between individual quantity and mass quantity in Barner and Snedeker (2005) does not test the semantics of mass superordinate nouns. For example, McCawley (1975) argued that the meaning of mass superordinate nouns like furniture is defined by abstract properties like the function fulfilled by objects, rather than their volume or their status as individuals. For example, according to McCawley, the meaning of `furniture' is `for furnishing', rather than `pieces of things for furnishing' (an individuation meaning) or `mass of things for furnishing' (a mass meaning). To demonstrate, consider the following scenario ``Fred has 4 chairs, 3 magazine racks, 2 coffee tables, and 1 lamp. I have 2 chairs, 1 desk, 1 bed, 1 sofa, and 1 table.'' I have more furniture than Fred -- despite the fact that Fred has a higher number of pieces of furniture. Rather, the judgment of ``more furniture'' seems to rely on the criterion of being able to better fulfill the function of ``furnishing a space'' (see also Prasada, 1999).
+
+Grimm and Levin (2012) provided empirical evidence for McCawley's observation. Participants were asked to decide who has ``more'' of a mass superordinate noun (such as jewelry or furniture): one person has more number of pieces but less variety, and the other person has fewer number of pieces but more variety (similar to the scenario posed in McCawley, 1975). They found that for half of the mass superordinate nouns they investigated (\emph{furniture}, \emph{jewelry}, \emph{change}), participants were more likely to judge a higher extent of function-fulfillment as ``more'' compared to a higher number of pieces. The judgment based on function were significantly less available for count superordinate nouns (such as \emph{buildings} and \emph{tools}), in which case participants overwhelmingly chose the person with a higher number of pieces as having ``more'' (for an earlier unpublished study using the same logic, see also Gordon \& Rodman, 2006).
+
+One way to reconcile the findings in Grimm and Levin (2012) and Barner and Snedeker (2005) is with the mass non-specificity theory Barner \& Snedeker (2006). This theory proposes that count syntax denotes individuals, but mass syntax is unspecified in terms of individuation. In this view, mass syntax is unspecified and allows for both individuation and non-individuation inferences. Context may guide whether, and over what dimension, language users construe mass nouns as individuals. In normal circumstances, one might judge that someone with more variety of furniture has more furniture, as opposed to a person with more individual pieces of furniture but less variety (McCawley, 1975). However, in a situation where the furniture has to be moved, one might judge that someone with more individual pieces of furniture, or more mass of furniture, has more furniture despite less variety.
+
+A drawback of previous studies that investigate mass superordinate nouns is that they did not investigate semantic inferences of count superordinate nouns. While Grimm and Levin (2012) did include count superordinate nouns and found that participants preferred to quantify them by number of individual pieces, the count nouns included do not refer to the same phenomena as the mass nouns. This leaves open the possibility that the difference observed in quantification criterion might not stem from mass-count syntax, but rather from an inherent physical reality of the referents. In other words, perhaps the referent of \emph{furniture} would always be unspecified and allow for flexible individuation or non-individuation inferences, whether its label has mass or count syntax. Similarly, it is possible that the referent of \emph{tools} might always be quantified as individuals regardless of its syntax.
+
+Wisniewski et al. (1996) took a different approach and investigated semantic inferences of both object-mass and object-count superordinate nouns in English. Adult English speakers were asked to generate salient features for mass superordinate nouns (such as \emph{furniture}) and count superordinate nouns (such as \emph{buildings}). They made more references to interactions that involve multiple members of a category concurrently for mass superordinate nouns -- for example, `eat' for \emph{food} (we often eat multiple types of food at the same time). Meanwhile, participants made more references to interactions involving an individual member of the category for count superordinate nouns -- for example, `play' for \emph{musical instruments} (we often play only one musical instrument at a time). Additionally, adult participants judged exemplars from mass superordinate categories to co-occur more often than those from count superordinate categories.
+
+From these results, Wisniewski et al. (1996) proposed functional context as a semantic contrast that can be inferred from the mass-count syntax status of superordinate nouns. Specifically, this contrast differentiates superordinate categories whose members are involved in a function concurrently (Concurrent Function Context), mapping them to mass syntax, from those with members who are involved in a function individually (Individual Function Context), which are mapped onto count syntax. This view is compatible with the syntax-semantics bidirectional mapping theory, because it establishes a one-to-one correspondence between mass-count syntax and semantic inferences. The view predicts that category members in Concurrent Function Contexts would be perceived as non-individuated objects, and that when a syntactically ambiguous label is provided for the category, learners should assume that it is a mass noun. In contrast, category members in Individual Function Contexts would be perceived as individuated objects, and learners should assume that category labels are count nouns. Similarly, learners should infer that novel superordinate mass nouns refer to category members that concurrently participate in a function, whereas they should infer that novel count nouns refer to category members that fulfill a function individually. To illustrate, \emph{furniture} is a mass superordinate noun, resulting in its exemplars (e.g., chairs and tables) being perceived as a group of non-individuated objects that concurrently participate in a \emph{furnishing} function (i.e., a single chair cannot furnish). Meanwhile, \emph{tools} is a count superordinate noun, which results in its exemplars (e.g., hammers and saws) being perceived as individuated objects that can individually fulfill a repairing function.
+
+The current study tests whether Concurrent vs Individual Function Context is a semantic distinction spontaneously inferred from the mass-count status of a superordinate noun. Specifically, on the bidirectional syntactic-semantic mapping theory, it is expected that a superordinate mass noun should lead to the inference that its exemplars are more likely to be involved in a function concurrently (Concurrent Function Context). Whereas a superordinate count noun should lead to the inference that its exemplars are more likely to be involved in a function individually (Individual Function Context).
+
+\hypertarget{methods}{%
+\section{Methods}\label{methods}}
+
+\hypertarget{participants}{%
+\subsection{Participants}\label{participants}}
+
+Data collection and analyses for this study were preregistered, and the pre-registration is available at \url{https://osf.io/bkmes}. We recruited 119 adult native English speakers from the online platform Prolific\footnote{Due to a technical error, we recruited an additional 11 participants. Their data was not included in the analysis, nor looked at by the researchers.}. 9 participants failed the comprehension checks before any critical trials, and we did not collect any data from these participants. All participants live in the US and have English as their first language. We had pre-registered an exclusion criterion to exclude any participants who are fluent in another language other than English (self-reported 6 or more out of 10 in speaking and comprehension), but we did not find any participants who needed to be excluded based on this criterion. Participants from whom we collected data were compensated with \$2 through the Prolific platform.
+
+Our final sample included 110 participants (51M, 53F, 6 non-binary), with mean age = 37.48 (SD = 13.55).
+
+Participants were randomly assigned to the mass syntax and count syntax conditions, with n=55 for each condition in our final sample.
+
+\hypertarget{design}{%
+\subsection{Design}\label{design}}
+
+We designed the experiment to be a between-subject design with 2 conditions (Syntax: Mass, Count). We manipulated the syntax seen by each participant to be either mass or count, which is operationalized by the morphosyntactic form of the novel word. For example, for the novel label \emph{garn}, in the mass condition, participants saw the prompt `Some of these objects are \emph{garn}. Please select the ones that are \emph{garn}.' In the count condition, participants saw the prompt `Some of these objects are \emph{garns}. Please select the ones that are \emph{garns}.'
+
+The dependent variable we were interested in is the semantic inference made by participants in terms of functional contexts. This had two levels: Individual Functional Context and Concurrent Functional Context. These functional contexts were operationalized as the pattern of interaction between groups of three objects and a `detector' that can be activated by one object and/or the entire group of objects. In the Individual Functional Context, each object in the group activates the detector individually, and the entire group also concurrently activates the detector. In the Concurrent Functional Context, the detector is only activated by the entire group, but not by each object individually. The detector is `activated' if it lights up when an object or a group of objects are placed on it, and is not `activated' if it does not light up.
+
+\hypertarget{material}{%
+\subsection{Material}\label{material}}
+
+All stimuli and scripts for the experiment and analysis are available at \url{https://osf.io/ay2um/}. The novel objects used to form novel categories were chosen from the stimuli in the Novel Object and Unusual Name (NOUN) Database (Horst \& Hout, 2016). We grouped objects based on their perceived complexity and functionality. Complexity and functionality have been found to modulate semantic inferences of novel labels. When adult English speakers are taught novel labels with a single exemplar, exemplars that are more complex or judged to be more likely to have shape-dependent function are more likely to be extended to a shape-match item rather than a substance-match item (Li, Dunham, \& Carey, 2009). Additionally, when asked to choose between two sentences to refer to a novel item, adult participants are more likely to construe the item as an individuated object (operationalized as choosing to describe the item with a syntactically-count label) if the item has shape-dependent function (Prasada, Ferenz, \& Haskell, 2002), as opposed to shape-independent function. These results suggest that complexity and functionality might determine differing base rates of semantic inferences of objects, with more complex and more functional objects being more likely to be construed as individuals. We might reason that in our paradigm, categories with objects that are more complex and more functional might be construal more individually and thus have a higher baseline for being interpreted to have Individual Functional Context semantics, regardless of the mass-count syntax manipulation.
+
+To obtain the objects' complexity and functionality ratings, we carried out a norming study with 38 participants who are undergraduates at University of California, San Diego. During the study, we asked the participants to rate 64 objects from the NOUN Database on their shape-wise complexity and how likely they are to have a function. Participants made their ratings on a Likert scale from 1 to 7. On the complexity scale, 1 means low complexity and 7 means high complexity. On the function scale, 1 means very unlikely to have a function and 7 means very likely to have a function. After excluding three participants who did not pass all attention checks and three participants who are beyond +-2.5 SD of the mean for the two familiar training images (a fork and a pile of dirt), we obtained ratings for 64 objects from 32 participants in total. We then created five groups of objects with six objects each, based on the relative complexity and function ratings, forming five novel categories. We pseudo-randomly separate each group of six objects into two sub-groups of three objects each. The composition of each sub-group for each category is consistent across participants. The details for these categories are in Table 1.
+
+\begin{table}[tbp]
+
+\begin{center}
+\begin{threeparttable}
+
+\caption{\label{tab:unnamed-chunk-1}Complexity and Functionality ratings of the 5 categories, out of a 1-7 Likert scale.}
+
+\begin{tabular}{lll}
+\toprule
+Category & Mean Complexity Rating & Mean Functionality Rating\\
+\midrule
+high C, high F & 4.99 & 4.39\\
+high C, low F & 4.56 & 2.80\\
+low C, high F & 2.54 & 4.36\\
+low C, low F & 2.69 & 2.63\\
+medium C, medium F & 3.87 & 3.44\\
+\bottomrule
+\addlinespace
+\end{tabular}
+
+\begin{tablenotes}[para]
+\normalsize{\textit{Note.} In the Category column, C stands for Complexity, F stands for Functionality.}
+\end{tablenotes}
+
+\end{threeparttable}
+\end{center}
+
+\end{table}
+
+The critical trials were presented as a two-alternative forced-choice task. In each trial, participants were prompted with a novel label (\emph{zorp}, \emph{garn}, \emph{blicket}, \emph{toma}, \emph{sarel}), and shown the two sub-groups of a category. Each sub-group of objects was randomly assigned to either carry the Individual Functional Context semantic meaning, or the Concurrent Functional Context semantic meaning. There are 5 critical trials in total. The order of trials and novel labels shown are counterbalanced across participants.
+
+\hypertarget{procedure}{%
+\subsection{Procedure}\label{procedure}}
+
+\begin{figure}
+\centering
+\includegraphics{figs/exp.png}
+\caption{\label{fig:my-figure}Example of a critical trial in the count syntax condition.}
+\end{figure}
+
+Participants were randomly assigned either to the mass or count syntax condition. They first saw a series of familiarization videos that introduced them to the detector and how it can be activated by an individual object or a group of three objects. Participants then answered comprehension check questions regarding two groups of objects with different patterns of interaction with the detector. For each group of objects, participants were asked whether each object activated the detector, and whether the entire group of objects activated the detector. The questions were presented on the same page as the information on the relevant objects' patterns of interaction with the detector, creating two blocks of four questions each. Participants had three opportunities to answer each block of questions correctly. If they failed the comprehension checks, they did not proceed to the critical trials.
+
+Qualified participants then answered the 5 critical trials. In each trial, participants saw a prompt with a novel label word in either mass or count syntax based on the condition they are assigned to (Mass condition: ``Some of these are \emph{zorp}. Please select the ones that are \emph{zorp}''. Count condition: Some of these are \emph{zorps}. Please select the ones that are \emph{zorps}.) Participants indicate whether they think the label refers to the sub-group in the Individual Functional Context, or the sub-group in the Concurrent Functional Context (Figure 1). They were then asked what strategies they used to answer the questions, and demographic questions about age, gender, ethnicity, primary language, other languages and their fluency.
+
+\hypertarget{results}{%
+\section{Results}\label{results}}
+
+\hypertarget{semantic-inferences-of-mass-count-syntax.}{%
+\subsection{Semantic inferences of mass-count syntax.}\label{semantic-inferences-of-mass-count-syntax.}}
+
+\begin{figure}
+\centering
+\includegraphics{3_writeup_files/figure-latex/figure1-1.pdf}
+\caption{\label{fig:figure1}Proportion of semantic inferences by syntactic condition (Concurrent Functional Context and Individual Functional Context are dummy-coded as 1 and 0 respectively). Each gray dot indicates a participant's mean selection. Error bars indicate bootstrapped 95\% confidence interval.}
+\end{figure}
+
+Participants' responses are summarized in Figure 2. Two-sided one-sample t-tests for each syntax condition show that, against the predictions of the bidirectional mapping theory, proportion of Concurrent Functional Context selection is not significantly different from chance in both conditions (mass condition: \(t(54) = -1.92\), \(p = .060\); count condition: \(t(54) = -1.57\), \(p = .123\)).
+
+In order to test the effect of syntax on semantic inferences of functional context, we ran a mixed-effects logistic regression model predicting Functional Context selection (Concurrent Functional Context and Individual Functional Context) with Syntax (Mass and Count) as fixed effects. As random effects, we included an intercept per participant and one per category. We found no significant effect of syntax on Functional Context selection (\(\beta_{mass}\) = -0.10, p = 0.654).
+
+Another question was whether this result provides support for the null hypothesis, where syntax has no effect on semantic inferences. In order to probe this, we conducted an exploratory analysis by fitting a Bayesian linear model (estimated using MCMC sampling with 4 chains of 300 iterations and a warmup of 150) to predict Functional Context selection with Syntax, with random intercepts for participant and category, and default (weakly informative normal) priors. We did not observe a reliable effect of syntax (\(\beta\) = -0.02, 95\% CI = {[}-0.13, 0.08{]}), confirming our analysis using the mixed-effects logistic regression model. To evaluate evidence for the null hypothesis -- that syntax has no effect on semantic inference, we compare support for the test model to a null constant model with identical structure and omitting the syntax fixed effect. The estimated Bayes Factor in favor of the test model over the null model was 0.14, which suggests moderate evidence for the null model (Lee \& Wagenmakers, 2013).
+
+\hypertarget{exploratory-analysis-moderation-of-semantic-inferences-by-complexity-and-functionality.}{%
+\subsection{Exploratory Analysis: Moderation of semantic inferences by complexity and functionality.}\label{exploratory-analysis-moderation-of-semantic-inferences-by-complexity-and-functionality.}}
+
+Previous studies have shown that complexity and functionality might affect whether an entity is construed as an individuated object (Li et al., 2009; Prasada et al., 2002), and whether its label is learned as a mass or count noun (Barner \& McKeown, 2005). As an exploratory analysis, we investigate whether complexity and functionality of item categories might modulate semantic inferences. By-trial responses are summarized in Figure 3, grouped by category. Two-sided one-sample t-tests show that proportion of Concurrent Functional Context selection does not significantly differ from chance for any category (p \textgreater{} .05). We ran mixed-effects logistic regression models with the same effects structure as above and added either Complexity (high, low, medium), Functionality (high, low, medium),interaction of Complexity and Functionality, or Category (5 levels as described in Table 1) as fixed effects. We found no significant effect for any of the additional predictors (p \textgreater{} .05).
+
+\begin{figure}
+\centering
+\includegraphics{3_writeup_files/figure-latex/unnamed-chunk-3-1.pdf}
+\caption{\label{fig:unnamed-chunk-3}Proportion of semantic inferences by syntactic condition and item category. On the x-axis, C stands for Complexity, F for Functionality. Each colored dot indicates a critical trial. Error bars indicate bootstrapped 95\% confidence interval.}
+\end{figure}
+
+\hypertarget{exploratory-analysis-moderation-of-semantic-inferences-by-critical-trial-order.}{%
+\subsection{Exploratory Analysis: Moderation of semantic inferences by critical trial order.}\label{exploratory-analysis-moderation-of-semantic-inferences-by-critical-trial-order.}}
+
+Due to the study being between-subject and participants only seeing either the mass or count syntax for all the critical trials, we hypothesized that the repeated trials might prompt people to be more random with their semantic inference selections. If this was the case, perhaps participants did choose more Concurrent Function Context inferences in the mass condition and more Individual Function Context inferences in the count condition (as predicted by the bidirectional theory), but only on the first critical trial. Meanwhile, in later trials participants might be more random with their selections.
+
+\begin{figure}
+\centering
+\includegraphics{3_writeup_files/figure-latex/unnamed-chunk-6-1.pdf}
+\caption{\label{fig:unnamed-chunk-6}Proportion of semantic inferences by syntactic condition and critical trial number. Each colored dot indicates a critical trial. Error bars indicate bootstrapped 95\% confidence interval.}
+\end{figure}
+
+In order to probe this, we ran a mixed-effects logistic regression model with the same effects structure as above, and Critical Trial Index and an interaction of Critical Trial Index and Syntax as additional fixed effects (treating Critical Trial Index as a categorical variable). We found no significant effect of Trial Index or Trial Index x Syntax interaction (Trial Index: \(\chi^2\)(4) = 6.10, p = 0.192; Trial Index x Syntax: \(\chi^2\)(4) = 2.79, p = 0.594). Post-hoc pairwise t-tests comparing responses across syntactic conditions at each critical trial also confirm this finding -- by critical trials, there is no significant difference in responses in the mass syntax vs count syntax condition. By-trial responses are summarized in Figure 4, grouped by trial number.
+
+Two-sided one-sample t-tests collapsing across syntactic conditions for each critical trial index shows that only in the first critical trial, proportion of Concurrent Functional Context selection is significantly different from chance (\(t(109) = -4.31\), \(p < .001\)). This suggests that participants might have a baseline bias towards the Individual Functional Context, regardless of Syntax, perhaps because it provides more information about the objects as both individuals and a group.
+
+\hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
+
+The current study tested the claim that there exists a bidirectional mapping between mass-count syntactic distinction of superordinates and semantic inferences-- specifically, inferences regarding the likely functional context of the superordinates' references. The results we observed provide no evidence for this theory. Adult native English speakers do not make different functional context inferences based on mass-count syntax: they are equally likely to judge that exemplars in a category participate in a function concurrently when the category is introduced as a mass noun or a count noun. The post-hoc Bayes factor analysis suggests that there is moderate evidence for the null hypothesis -- that there does not exist a bidirectional syntactic-semantic mapping for mass-count superordinate terms and functional context inferences.
+
+However, this result does not eliminate the possibility of bidirectional syntax-semantics mappings for superordinates. One possible reason that we failed to find evidence for such mappings might be because the study's operationalization of functional context (a detector being activated) does not align with the way these functional context inferences of familiar superordinates (such as furniture) are represented. One discrepancy is that familiar superordinates' functionality might be more closely tied to the superordinates' referents compared to functionality as operationalized in our experiment. For example, `furniture' has the function of furnishing, and does not spontaneously share such function with other superordinate categories. Meanwhile, our study shows two types of functionality that are shared across all superordinate categories. This difference in representation of `functionality' might have prevented participants in the study from reasoning about semantic distinction in terms of functional context.
+
+Barring issues with the experimental design, the findings seem to provide evidence against a syntax-semantics bidirectional mapping theory (as proposed by Bloom, 1999; MacNamara, 1972; Quine, 1960; Wisniewski et al., 1996). This leaves us with the mass non-specificity theory (Barner \& Snedeker, 2006; Gillon, 1999), which proposes that count syntax leads to specific semantic inferences, mass syntax does not.
+
+How does the mass non-specificity theory explain why some superordinate nouns are learned as mass nouns, and some as count nouns? While our study did not observe different semantic inferences of mass vs count superordinate nouns, it was designed so that the same number of objects were presented in each functional context group (three objects per group) in order to minimize the difference between the functional contexts. However, it is possible that mass-count mappings to inferences about functional context are guided by set numerosity itself (which we had kept constant). To illustrate: in a non-experimental context, references to superordinate categories with functions that involve individual members would likely be made for a single member of the category (e.g.~``Avoid the vehicle'', when a single vehicle is present). Meanwhile, references to superordinate categories with functions involving multiple members simultaneously would likely be made for a group of category members (e.g., ``Don't jump on the furniture,'' when multiple pieces of furniture are present). Gordon (1985) presented children with novel labels in ambiguous syntax (``look at the garn'') as names for either one single object or a group of identical objects. Children were more likely to pluralize the labels when later applied to a group when they originally saw one object, compared to when they originally saw a group of objects. Barner and McKeown (2005) found the same result, and also found that children were more likely to extend labels that they have pluralized to a shape match in a word extension task. These empirical results showed that when a novel noun is used to name a group of objects (as opposed to one object), children are more likely to treat it as a mass noun (by not pluralizing it when referring to a group) and treat its referent as a non-individuated entity (by not extending the label by shape). Therefore, if children more often hear superordinate categories with functions involving multiple members concurrently (such as \emph{furniture}) when presented with a group of objects, it follows that they would learn those categories as a mass noun. This provides a possible explanation of how mass object-superordinate nouns are acquired under a mass non-specificity theory (see also the discussion in Barner \& Snedeker, 2006). Future research should test this theory with empirical studies looking at children's acquisition of novel mass superordinate nouns.
+
+Future research can also test the mass non-specificity theory more directly, for example, by investigating superordinates with translational equivalents that are different in mass-count syntax (e.g.~\emph{furniture} in English and \emph{meubles} in French). Do speakers of different languages make different semantic inferences for these superordinates, in a way that correspond with the nouns' mass-count syntax status in their native language? If so, are those semantic inferences made online or offline, and does testing language has an effect on semantic inferences? Importantly, do the count translation equivalents of mass superordinates exhibit flexibility in individuation in a quantity judgment task (Barner \& Snedeker, 2005; Grimm \& Levin, 2012), similar to their mass counterparts?
+
+More research is also needed to determine the meaning of mass superordinate nouns. McCawley's analysis (1975) of mass superordinate nouns as having the meaning ``for doing X'' (e.g.~\emph{furniture} means `for furnishing'), while sufficient to explain quantification behaviors, does not explain other behaviors of these nouns. In his own analysis, McCawley pointed out that furniture accepts adjectives such as `large,' which have to modify an artifact, rather than a function (`large furniture' refers to its volume / mass rather than its ability to furnish.) Additionally, we refer to furniture in other contexts such as painting, burning, moving, etc., none of which refers to furniture's function but rather its referents' status as objects. These examples suggest that what McCawley proposed as the meaning of mass superordinate nouns is incomplete (see Barner, Wagner, \& Snedeker, 2008 for a discussion).
+
+Future research might also investigate factors that give rise to different quantification behaviors for mass superordinate nouns. Under which circumstances do adult native English speakers quantify these nouns by individuals (as observed in Barner \& Snedeker, 2005), and when are other criteria more salient (like the results from Gordon \& Rodman, 2006; Grimm \& Levin, 2012)? Beyond function, variety, or mass, what other dimensions are used to make individuation and quantification judgments? Here we might extend our investigation beyond superordinate nouns. Barner et al. (2008) found evidence that noun phrases denoting events are quantified differently based on both their syntax and the nature of the event depicted. Nouns denoting `durative' events, such as dancing, are quantified by individual events when presented in count syntax, but not when presented in mass syntax. Meanwhile, nouns denoting `punctual' events, such as jumping, are quantified by individual events when presented in either count or mass syntax. This result suggests that event punctuality is another dimension that might guide individuation of noun phrases.
+
+In conclusion, this paper investigated whether mass-count syntax of superordinate nouns lead to different semantic inferences about their function. Our findings do not support a syntax-semantics bidirectional mapping theory, as mass and count syntax do not differ in their inferences. Taken together with results from previous studies, this suggests that a theory where mass syntax do not specify individuation status or semantic inferences might better reflect language. However, further research needs to be conducted to test this theory more rigorously, in order to understand how the mass-count syntax distinction arises in superordinate nouns, and how children acquire it.
+
+\newpage
+
+\hypertarget{references}{%
+\section{References}\label{references}}
+
+\hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-barner2005mckeown}{}}%
+Barner, D., \& McKeown, R. (2005). The syntactic encoding of individuation in language and language acquisition. \emph{BUCLD 28: Proceedings of the 28th Annual Boston University Conference on Language Development}, 61--72. Cascadilla Press Somerville, MA.
+
+\leavevmode\vadjust pre{\hypertarget{ref-barner2005}{}}%
+Barner, D., \& Snedeker, J. (2005). Quantity judgments and individuation: Evidence that mass nouns count. \emph{Cognition}, \emph{97}(1), 41--66. \url{https://doi.org/10.1016/j.cognition.2004.06.009}
+
+\leavevmode\vadjust pre{\hypertarget{ref-barner2006}{}}%
+Barner, D., \& Snedeker, J. (2006). Children's early understanding of mass-count syntax: Individuation, lexical content, and the number asymmetry hypothesis. \emph{Language Learning and Development}, \emph{2}(3), 163--194.
+
+\leavevmode\vadjust pre{\hypertarget{ref-barner2008}{}}%
+Barner, D., Wagner, L., \& Snedeker, J. (2008). Events and the ontology of individuals: {Verbs} as a source of individuating mass and count nouns. \emph{Cognition}, \emph{106}(2), 805--832. \url{https://doi.org/10.1016/j.cognition.2007.05.001}
+
+\leavevmode\vadjust pre{\hypertarget{ref-bloom1994}{}}%
+Bloom, P. (1994). Syntax-semantics mappings as an explanation for some transitions in language development. \emph{Other Children, Other Languages: Issues in the Theory of Language Acquisition}, \emph{41}, 75.
+
+\leavevmode\vadjust pre{\hypertarget{ref-bloom1999}{}}%
+Bloom, P. (1999). The role of semantics in solving the bootstrapping problem. In R. Jackendoff, P. Bloom, \& K. Wynn (Eds.), \emph{Language, logic, and concepts: Essays in memory of john macnamara} (pp. 285--310). MIT Press.
+
+\leavevmode\vadjust pre{\hypertarget{ref-bloom1995}{}}%
+Bloom, P., \& Kelemen, D. (1995). Syntactic cues in the acquisition of collective nouns. \emph{Cognition}, \emph{56}(1), 1--30. \url{https://doi.org/10.1016/0010-0277(94)00648-5}
+
+\leavevmode\vadjust pre{\hypertarget{ref-braine1987}{}}%
+Braine, M. D. (1987). What is learned in acquiring word classes---a step toward an acquisition theory. \emph{Mechanisms of Language Acquisition}, 65--86.
+
+\leavevmode\vadjust pre{\hypertarget{ref-braine1992}{}}%
+Braine, M. D. (1992). What sort of innate structure is needed to {``bootstrap''} into syntax? \emph{Cognition}, \emph{45}(1), 77--100.
+
+\leavevmode\vadjust pre{\hypertarget{ref-carey2001}{}}%
+Carey, S., \& Xu, F. (2001). Infants' knowledge of objects: Beyond object files and object tracking. \emph{Cognition}, \emph{80}(1-2), 179--213.
+
+\leavevmode\vadjust pre{\hypertarget{ref-cheng1973}{}}%
+Cheng, C.-Y. (1973). Comments on {Moravcsik}'s {Paper}. In K. J. J. Hintikka, J. M. E. Moravcsik, \& P. Suppes (Eds.), \emph{Approaches to {Natural} {Language}: {Proceedings} of the 1970 {Stanford} {Workshop} on {Grammar} and {Semantics}} (pp. 286--288). Dordrecht: Springer Netherlands. \url{https://doi.org/10.1007/978-94-010-2506-5_14}
+
+\leavevmode\vadjust pre{\hypertarget{ref-chierchia1998}{}}%
+Chierchia, G. (1998). Plurality of {Mass} {Nouns} and the {Notion} of {``{Semantic} {Parameter}.''} In G. Chierchia, P. Jacobson, F. J. Pelletier, \& S. Rothstein (Eds.), \emph{Events and {Grammar}} (Vol. 70, pp. 53--103). Dordrecht: Springer Netherlands. \url{https://doi.org/10.1007/978-94-011-3969-4_4}
+
+\leavevmode\vadjust pre{\hypertarget{ref-feigenson2003}{}}%
+Feigenson, L., \& Carey, S. (2003). Tracking individuals via object-files: Evidence from infants' manual search. \emph{Developmental Science}, \emph{6}(5), 568--584.
+
+\leavevmode\vadjust pre{\hypertarget{ref-gathercole1985}{}}%
+Gathercole, V. C. (1985). More and more and more about more. \emph{Journal of Experimental Child Psychology}, \emph{40}(1), 73--104.
+
+\leavevmode\vadjust pre{\hypertarget{ref-gillon1992}{}}%
+Gillon, B. S. (1992). Towards a common semantics for english count and mass nouns. \emph{Linguistics and Philosophy}, \emph{15}(6), 597--639. \url{https://doi.org/10.1007/BF00628112}
+
+\leavevmode\vadjust pre{\hypertarget{ref-gillon1999}{}}%
+Gillon, B. S. (1999). The {Lexical} {Semantics} of {English} {Count} and {Mass} {Nouns}. In E. Viegas (Ed.), \emph{The breadth and depth of semantic lexicons} (pp. 19--37). Kluwer. Retrieved from \url{https://aclanthology.org/W96-0307}
+
+\leavevmode\vadjust pre{\hypertarget{ref-gleitman1990}{}}%
+Gleitman, L. (1990). The structural sources of verb meanings. \emph{Language Acquisition}, \emph{1}(1), 3--55.
+
+\leavevmode\vadjust pre{\hypertarget{ref-gordon1985}{}}%
+Gordon, P. (1985). Evaluating the semantic categories hypothesis: {The} case of the count/mass distinction. \emph{Cognition}, \emph{20}(3), 209--242. \url{https://doi.org/10.1016/0010-0277(85)90009-5}
+
+\leavevmode\vadjust pre{\hypertarget{ref-gordon1988}{}}%
+Gordon, P. (1988). Count/mass category acquisition: Distributional distinctions in children's speech. \emph{Journal of Child Language}, \emph{15}(1), 109--128. \url{https://doi.org/10.1017/S0305000900012083}
+
+\leavevmode\vadjust pre{\hypertarget{ref-gordon2006}{}}%
+Gordon, P., \& Rodman, A. (2006). Functional quantification of object mass nouns in children and adults. \emph{30th Annual Boston University Conference on Language Development}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-grimm2012}{}}%
+Grimm, S., \& Levin, B. (2012). Who has more furniture? An exploration of the bases for comparison. \emph{Mass/Count in Linguistics, Philosophy and Cognitive Science Conference, {É}cole Normale Sup{é}rieure, Paris, France}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-horst2016}{}}%
+Horst, J. S., \& Hout, M. C. (2016). The novel object and unusual name (NOUN) database: A collection of novel images for use in experimental research. \emph{Behavior Research Methods}, \emph{48}, 1393--1409.
+
+\leavevmode\vadjust pre{\hypertarget{ref-huntley2002}{}}%
+Huntley-Fenner, G., Carey, S., \& Solimando, A. (2002). Objects are individuals but stuff doesn't count: Perceived rigidity and cohesiveness influence infants' representations of small groups of discrete entities. \emph{Cognition}, \emph{85}(3), 203--221.
+
+\leavevmode\vadjust pre{\hypertarget{ref-imai1997}{}}%
+Imai, M., \& Gentner, D. (1997). A cross-linguistic study of early word meaning: Universal ontology and linguistic influence. \emph{Cognition}, \emph{62}(2), 169--200. \url{https://doi.org/10.1016/S0010-0277(96)00784-6}
+
+\leavevmode\vadjust pre{\hypertarget{ref-imai1994}{}}%
+Imai, M., Gentner, D., \& Uchida, N. (1994). Children's theories of word meaning: The role of shape similarity in early acquisition. \emph{Cognitive Development}, \emph{9}(1), 45--75.
+
+\leavevmode\vadjust pre{\hypertarget{ref-jespersen1909}{}}%
+Jespersen, O. (1909). \emph{A modern english grammar: On historical principles. I-VII}. Einar Munksgaard.
+
+\leavevmode\vadjust pre{\hypertarget{ref-landau1988}{}}%
+Landau, B., Smith, L. B., \& Jones, S. S. (1988). The importance of shape in early lexical learning. \emph{Cognitive Development}, \emph{3}(3), 299--321.
+
+\leavevmode\vadjust pre{\hypertarget{ref-lee2013}{}}%
+Lee, M. D., \& Wagenmakers, E. J. (2013). \emph{Bayesian cognitive modeling: A practical course}. Cambridge University Press. Retrieved from \url{https://books.google.com/books?id=50tkAgAAQBAJ}
+
+\leavevmode\vadjust pre{\hypertarget{ref-li2009}{}}%
+Li, P., Dunham, Y., \& Carey, S. (2009). Of substance: {The} nature of language effects on entity construal. \emph{Cognitive Psychology}, \emph{58}(4), 487--524. \url{https://doi.org/10.1016/j.cogpsych.2008.12.001}
+
+\leavevmode\vadjust pre{\hypertarget{ref-link1983}{}}%
+Link, G. (1983). The logical analysis of plurals and mass terms: A lattice-theoretical approach. \emph{Formal Semantics: The Essential Readings}, \emph{127}, 147.
+
+\leavevmode\vadjust pre{\hypertarget{ref-macnamara1972}{}}%
+MacNamara, J. (1972). Cognitive basis of language learning in infants. \emph{Psychological Review}, \emph{79}, 1--13. \url{https://doi.org/10.1037/h0031901}
+
+\leavevmode\vadjust pre{\hypertarget{ref-mccawley1975}{}}%
+McCawley, J. D. (1975). Lexicography and the count-mass distinction. \emph{Annual Meeting of the Berkeley Linguistics Society}, \emph{1}, 314--321.
+
+\leavevmode\vadjust pre{\hypertarget{ref-naigles1996}{}}%
+Naigles, L. R. (1996). The use of multiple frames in verb learning via syntactic bootstrapping. \emph{Cognition}, \emph{58}(2), 221--251.
+
+\leavevmode\vadjust pre{\hypertarget{ref-pinker1984}{}}%
+Pinker, S. (1984). \emph{Language learnability and language development: With new commentary by the author} (Vol. 7). Harvard University Press.
+
+\leavevmode\vadjust pre{\hypertarget{ref-prasada1999}{}}%
+Prasada, S. (1999). Names of things and stuff: {An} {Aristotelian} perspective. In \emph{Language, logic, and concepts: {Essays} in memory of {John} {Macnamara}} (pp. 119--146). Cambridge, MA, US: The MIT Press.
+
+\leavevmode\vadjust pre{\hypertarget{ref-prasada2002}{}}%
+Prasada, S., Ferenz, K., \& Haskell, T. (2002). Conceiving of entities as objects and as stuff. \emph{Cognition}, \emph{83}(2), 141--165.
+
+\leavevmode\vadjust pre{\hypertarget{ref-quine1960}{}}%
+Quine, W. V. O. (1960). \emph{Word and object}. MIT Press.
+
+\leavevmode\vadjust pre{\hypertarget{ref-samuelson1999}{}}%
+Samuelson, L. K., \& Smith, L. B. (1999). Early noun vocabularies: Do ontology, category structure and syntax correspond? \emph{Cognition}, \emph{73}(1), 1--33.
+
+\leavevmode\vadjust pre{\hypertarget{ref-wierzbicka1988}{}}%
+Wierzbicka, A. (1988). \emph{The semantics of grammar}. John Benjamins Publishing Company.
+
+\leavevmode\vadjust pre{\hypertarget{ref-wisniewski1996}{}}%
+Wisniewski, E. J., Imai, M., \& Casey, L. (1996). On the equivalence of superordinate concepts. \emph{Cognition}, \emph{60}(3), 269--298. \url{https://doi.org/10.1016/0010-0277(96)00707-X}
+
+\end{CSLReferences}
+
+
+\end{document}
